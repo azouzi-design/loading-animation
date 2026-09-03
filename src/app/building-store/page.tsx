@@ -26,8 +26,8 @@ export default function BuildingStorePage() {
       style={
         {
           background: "#f9f9f9",
-          "--ink": "#CE4744",
-          "--ink-3": "color-mix(in srgb, #CE4744 45%, white)",
+          "--ink": "#594F4C",
+          "--ink-3": "color-mix(in srgb, #594F4C 45%, white)",
         } as CSSProperties
       }
     >
