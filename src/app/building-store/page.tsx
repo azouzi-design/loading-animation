@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, type CSSProperties } from "react";
 import { LoaderGrid, PATTERNS } from "@/components/loading-state";
 
@@ -21,10 +22,25 @@ export default function BuildingStorePage() {
 
   return (
     <div
-      className="flex flex-1 flex-col items-center justify-center bg-white px-6"
-      style={{ "--ink": "#171717", "--ink-3": "#a3a3a3" } as CSSProperties}
+      className="relative flex flex-1 flex-col items-center justify-center px-6"
+      style={
+        {
+          background: "#f9f9f9",
+          "--ink": "#CE4744",
+          "--ink-3": "color-mix(in srgb, #CE4744 45%, white)",
+        } as CSSProperties
+      }
     >
-      <div className="flex scale-150 items-center gap-2.5">
+      <Image
+        src="/app-image.png"
+        alt=""
+        height={800}
+        width={369}
+        className="relative z-0 h-[800px] w-auto"
+        priority
+      />
+
+      <div className="absolute inset-0 z-10 flex scale-[1.32] items-center justify-center gap-2.5">
         <LoaderGrid {...PATTERNS.Drive} />
         <span
           className="bg-clip-text text-[13px] font-medium text-transparent"
