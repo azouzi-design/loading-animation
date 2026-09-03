@@ -7,13 +7,9 @@ import { useEffect, useState } from "react";
  *
  * Tasks resolve one at a time: the active row's ring spins,
  * then flips to a green check and a "Completed" pill before
- * the next row starts. Once every row is done, the sequence
- * pauses briefly and loops from the top.
+ * the next row starts. Runs once per mount — the parent owns
+ * looping (e.g. by remounting on a cycle timer).
  * ───────────────────────────────────────────────────────── */
-
-const RUN_MS = 1500;
-const GAP_MS = 350;
-const LOOP_PAUSE_MS = 1400;
 
 export type Task = { key: string; label: string };
 
@@ -28,8 +24,8 @@ const DEFAULT_TASKS: Task[] = [
   { key: "personalize", label: "Personalizing your suggestions" },
 ];
 
-function useSequentialTasks(count: number) {
-  const [activeIndex, setActiveIndex] = useState(0);
+function useSequentialTasks(count: number, runMs: number, gapMs: number, startDelayMs: number) {
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [doneCount, setDoneCount] = useState(0);
 
   useEffect(() => {
@@ -43,32 +39,19 @@ function useSequentialTasks(count: number) {
         setTimeout(() => {
           if (cancelled) return;
           setDoneCount(i + 1);
-          timers.push(
-            setTimeout(() => {
-              if (cancelled) return;
-              if (i + 1 < count) {
-                step(i + 1);
-              } else {
-                timers.push(setTimeout(runCycle, LOOP_PAUSE_MS));
-              }
-            }, GAP_MS),
-          );
-        }, RUN_MS),
+          if (i + 1 < count) {
+            timers.push(setTimeout(() => step(i + 1), gapMs));
+          }
+        }, runMs),
       );
     }
 
-    function runCycle() {
-      if (cancelled) return;
-      setDoneCount(0);
-      step(0);
-    }
-
-    runCycle();
+    timers.push(setTimeout(() => step(0), startDelayMs));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
     };
-  }, [count]);
+  }, [count, runMs, gapMs, startDelayMs]);
 
   return { activeIndex, doneCount };
 }
@@ -114,12 +97,18 @@ export default function TaskRows({
   tasks = DEFAULT_TASKS,
   labels,
   className,
+  runMs = 1500,
+  gapMs = 350,
+  startDelayMs = 0,
 }: {
   tasks?: Task[];
   labels?: Partial<TaskRowsLabels>;
   className?: string;
+  runMs?: number;
+  gapMs?: number;
+  startDelayMs?: number;
 }) {
-  const { activeIndex, doneCount } = useSequentialTasks(tasks.length);
+  const { activeIndex, doneCount } = useSequentialTasks(tasks.length, runMs, gapMs, startDelayMs);
   const copy = { ...DEFAULT_LABELS, ...labels };
 
   return (
@@ -131,7 +120,7 @@ export default function TaskRows({
           <div
             key={task.key}
             className="flex h-11 items-center gap-2.5 rounded-card bg-surface px-2.5 shadow-card"
-            style={{ animation: `fade-up 450ms cubic-bezier(0.23,1,0.32,1) ${i * 80}ms both` }}
+            style={{ animation: `fade-up 450ms cubic-bezier(0.23,1,0.32,1) ${startDelayMs + i * 80}ms both` }}
           >
             <span className="flex size-6 shrink-0 items-center justify-center">
               {done ? <CheckBadge /> : <SpinnerRing active={running}>{i + 1}</SpinnerRing>}
