@@ -29,13 +29,13 @@ const orbit = Array.from({ length: 9 }, (_, i) => {
   return k === -1 ? null : k * 110;
 });
 
-const PATTERNS: Record<string, { delays: (number | null)[]; dur: number; round: boolean }> = {
+export const PATTERNS: Record<string, { delays: (number | null)[]; dur: number; round: boolean }> = {
   Drive: { delays: chevron, dur: 650, round: false },
   Dots: { delays: chevron, dur: 650, round: true },
   Orbit: { delays: orbit, dur: 950, round: false },
 };
 
-function LoaderGrid({
+export function LoaderGrid({
   delays,
   dur,
   round,
