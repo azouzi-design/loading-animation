@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -13,6 +13,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const plexSerif = IBM_Plex_Serif({
+  variable: "--font-plex-serif",
+  weight: ["600"],
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Loading Animation",
   description: "Pixel-grid loading state component",
@@ -22,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${geistMono.variable} ${plexSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
