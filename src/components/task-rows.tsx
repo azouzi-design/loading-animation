@@ -6,16 +6,12 @@ import { useEffect, useState } from "react";
  * TASK ROWS — sequential checklist loader
  *
  * Tasks resolve one at a time: the active row's ring spins,
- * then flips to a green check and a "Completed" pill before
- * the next row starts. Runs once per mount — the parent owns
- * looping (e.g. by remounting on a cycle timer).
+ * then flips to a green check before the next row starts.
+ * Runs once per mount — the parent owns looping (e.g. by
+ * remounting on a cycle timer).
  * ───────────────────────────────────────────────────────── */
 
 export type Task = { key: string; label: string };
-
-export type TaskRowsLabels = { completed: string };
-
-const DEFAULT_LABELS: TaskRowsLabels = { completed: "Completed" };
 
 const DEFAULT_TASKS: Task[] = [
   { key: "signin", label: "Signing in to your Harps app" },
@@ -95,21 +91,18 @@ function CheckBadge() {
 
 export default function TaskRows({
   tasks = DEFAULT_TASKS,
-  labels,
   className,
   runMs = 1500,
   gapMs = 350,
   startDelayMs = 0,
 }: {
   tasks?: Task[];
-  labels?: Partial<TaskRowsLabels>;
   className?: string;
   runMs?: number;
   gapMs?: number;
   startDelayMs?: number;
 }) {
   const { activeIndex, doneCount } = useSequentialTasks(tasks.length, runMs, gapMs, startDelayMs);
-  const copy = { ...DEFAULT_LABELS, ...labels };
 
   return (
     <div className={`flex w-full max-w-[360px] flex-col gap-2${className ? ` ${className}` : ""}`}>
@@ -128,14 +121,6 @@ export default function TaskRows({
             <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-ink">
               {task.label}
             </span>
-            {done && (
-              <span
-                className="inline-flex h-5.5 shrink-0 items-center rounded-full bg-green-tint px-2 text-[11.5px] font-medium text-green"
-                style={{ animation: "fade-in 200ms ease-out both" }}
-              >
-                {copy.completed}
-              </span>
-            )}
           </div>
         );
       })}
